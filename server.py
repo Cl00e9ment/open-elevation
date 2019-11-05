@@ -1,9 +1,26 @@
-import json
-
-import bottle
+import json, logging
 from bottle import route, run, request, response, hook
-
 from gdal_interfaces import GDALTileInterface
+
+logging.basicConfig(level=logging.DEBUG, format='%(levelname)s: %(message)s')
+
+
+def load_json_from_file(filepath):
+    with open(filepath) as file:
+        return (json.load(file))
+
+CONFIG = load_json_from_file('config.json')
+
+
+def is_key_valid(key):
+    with open('data/keys.txt', 'r') as keys_file:
+        line = keys_file.readline()
+        while line:
+            line = line.strip()
+            if len(line) == 0: continue
+            if line == key: return True
+            line = keys_file.readline()
+    return False
 
 
 class InternalException(ValueError):
@@ -63,7 +80,7 @@ def lat_lng_from_location(location_with_comma):
         lat, lng = [float(i) for i in location_with_comma.split(',')]
         return lat, lng
     except:
-        raise InternalException(json.dumps({'error': 'Bad parameter format "%s".' % location_with_comma}))
+        raise InternalException(400, 'Bad parameter format "%s".' % location_with_comma)
 
 
 def query_to_locations():
@@ -73,7 +90,7 @@ def query_to_locations():
     """
     locations = request.query.locations
     if not locations:
-        raise InternalException(json.dumps({'error': '"Locations" is required.'}))
+        raise InternalException(400, '"locations" is required.')
 
     return [lat_lng_from_location(l) for l in locations.split('|')]
 
@@ -86,19 +103,27 @@ def body_to_locations():
     try:
         locations = request.json.get('locations', None)
     except Exception:
-        raise InternalException(json.dumps({'error': 'Invalid JSON.'}))
+        raise InternalException(400, 'Invalid JSON.')
 
     if not locations:
-        raise InternalException(json.dumps({'error': '"Locations" is required in the body.'}))
+        raise InternalException(400, '"locations" is required in the body.')
 
     latlng = []
     for l in locations:
         try:
             latlng += [ (l['latitude'],l['longitude']) ]
         except KeyError:
-            raise InternalException(json.dumps({'error': '"%s" is not in a valid format.' % l}))
+            raise InternalException(400, '"%s" is not in a valid format.' % l)
 
     return latlng
+
+def check_key():
+    if CONFIG['key_required']:
+        key = request.query.key
+        if not key:
+            raise InternalException(400, '"key" is required.')
+        if not is_key_valid(key):
+            raise InternalException(400, '"%s" is not a valid key.' % key)
 
 
 def do_lookup(get_locations_func):
@@ -108,12 +133,12 @@ def do_lookup(get_locations_func):
     :return: 
     """
     try:
+        check_key()
         locations = get_locations_func()
         return {'results': [get_elevation(lat, lng) for (lat, lng) in locations]}
     except InternalException as e:
-        response.status = 400
-        response.content_type = 'application/json'
-        return e.args[0]
+        response.status = e.args[0]
+        return {'error': e.args[1]}
 
 # Base Endpoint
 URL_ENDPOINT = '/api/v1/lookup'
