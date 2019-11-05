@@ -135,9 +135,9 @@ def get_lookup():
 @route(URL_ENDPOINT, method=['POST'])
 def post_lookup():
     """
-        GET method. Uses body_to_locations.
-        :return: 
-        """
+    GET method. Uses body_to_locations.
+    :return: 
+    """
     return do_lookup(body_to_locations)
 
 #run(host='0.0.0.0', port=8080)
