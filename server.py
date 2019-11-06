@@ -1,26 +1,38 @@
-import json, logging
+import json, logging, os, sys
 from bottle import route, run, request, response, hook
 from gdal_interfaces import GDALTileInterface
 
 logging.basicConfig(level=logging.DEBUG, format='%(levelname)s: %(message)s')
 
+"""
+Global variables.
+"""
+CONFIG_FILEPATH = 'data/config.json'
+CONFIG = None
+KEYS_FILEPATH = 'data/keys.txt'
+URL_ENDPOINT = '/api/v1/lookup'
 
-def load_json_from_file(filepath):
-    with open(filepath) as file:
-        return (json.load(file))
 
-CONFIG = load_json_from_file('config.json')
+"""
+Initialize the config.
+"""
+def load_config():
+    if not os.path.isfile(CONFIG_FILEPATH):
+        logging.critical('"%s" not found.' % CONFIG_FILEPATH)
+        sys.exit()
+    with open(CONFIG_FILEPATH) as config_file:
+        return json.load(config_file)
 
+def check_config():
+    if 'key_required' not in CONFIG:
+        logging.critical('"key_required" boolean not found in config file.')
+        sys.exit()
+    if CONFIG['key_required'] and not os.path.isfile(KEYS_FILEPATH):
+        logging.critical('Config file specifies that a key is required but "%s" was not found.' % KEYS_FILEPATH)
+        sys.exit()
 
-def is_key_valid(key):
-    with open('data/keys.txt', 'r') as keys_file:
-        line = keys_file.readline()
-        while line:
-            line = line.strip()
-            if len(line) == 0: continue
-            if line == key: return True
-            line = keys_file.readline()
-    return False
+CONFIG = load_config()
+check_config()
 
 
 class InternalException(ValueError):
@@ -28,6 +40,24 @@ class InternalException(ValueError):
     Utility exception class to handle errors internally and return error codes to the client
     """
     pass
+
+
+def is_key_valid(key):
+    if not os.path.isfile(KEYS_FILEPATH):
+        logging.error('"%s" not found.' % KEYS_FILEPATH)
+        raise InternalException(500, 'Internal server error.')
+    try:
+        with open(KEYS_FILEPATH, 'r') as keys_file:
+            line = keys_file.readline()
+            while line:
+                line = line.strip()
+                if len(line) == 0: continue
+                if line == key: return True
+                line = keys_file.readline()
+        return False
+    except:
+        logging.error('Could not read "%s".' % KEYS_FILEPATH)
+        raise InternalException(500, 'Internal server error.')
 
 
 """
@@ -139,9 +169,6 @@ def do_lookup(get_locations_func):
     except InternalException as e:
         response.status = e.args[0]
         return {'error': e.args[1]}
-
-# Base Endpoint
-URL_ENDPOINT = '/api/v1/lookup'
 
 # For CORS
 @route(URL_ENDPOINT, method=['OPTIONS'])
