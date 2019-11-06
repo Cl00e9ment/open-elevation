@@ -32,12 +32,11 @@ If there is no recorded elevation at the provided coordinate, sea level (0 meter
 }
 ```
 
-
 ### Example:
 
 #### Request
 
-```
+```bash
 curl https://api.open-elevation.com/api/v1/lookup\?locations\=10,10\|20,20\|41.161758,-8.583933
 ```
 
@@ -66,7 +65,6 @@ curl https://api.open-elevation.com/api/v1/lookup\?locations\=10,10\|20,20\|41.1
 }
 ```
 
-
 ## `POST /api/v1/lookup`
 
 Returns ("looks up") the elevation at one or more `(latitude,longitude)` points.
@@ -76,7 +74,7 @@ The POST API currently has no limit
 ### Parameters:
 
 * A JSON (and respective headers) is required with the format:
-```
+```json
 {
     "locations":
     [
@@ -87,7 +85,6 @@ The POST API currently has no limit
         ...
 }
 ```
-
 
 ### Response format
 
@@ -109,12 +106,11 @@ If there is no recorded elevation at the provided coordinate, sea level (0 meter
 }
 ```
 
-
 ### Example:
 
 #### Request
 
-```
+```bash
 curl -X POST \
   https://api.open-elevation.com/api/v1/lookup \
   -H 'Accept: application/json' \
@@ -163,3 +159,29 @@ curl -X POST \
    ]
 }
 ```
+
+## Authentication
+
+If the server require authentication you have to provide a key.
+
+### Example:
+
+#### Request
+
+```bash
+curl https://api.open-elevation.com/api/v1/lookup\?locations\=10,10&key=demo-key
+```
+
+#### Response
+
+```json
+{
+   "results":
+   [
+      {
+         "longitude":10.0,
+         "elevation":515,
+         "latitude":10.0
+      }
+   ]
+}
