@@ -14,6 +14,8 @@ ENV C_INCLUDE_PATH=/usr/include/gdal
 
 ADD ./requirements.txt .
 
+RUN pip3 install numpy==1.12.0
+
 RUN pip3 install -r requirements.txt
 
 RUN apt-get install -y libspatialindex-dev unar bc
@@ -24,6 +26,4 @@ ADD . /code/
 
 WORKDIR /code
 
-CMD python server.py
-
-EXPOSE 8080
+CMD python3.5 server.py
