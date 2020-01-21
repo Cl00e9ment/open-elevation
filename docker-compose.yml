@@ -4,7 +4,7 @@ services:
     container_name: open-elevation
     build:
       context: .
-      dockerfile: ./docker/Dockerfile.arm64v8
+      dockerfile: ./docker/arm64v8.dockerfile
     ports:
       - '8080:8080'
     volumes:
