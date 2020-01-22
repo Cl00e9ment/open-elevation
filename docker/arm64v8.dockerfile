@@ -7,6 +7,8 @@ RUN curl -L https://github.com/balena-io/qemu/releases/download/v3.0.0%2Bresin/q
 FROM area51/gdal:arm64v8-2.2.3
 COPY --from=builder /qemu/qemu-arm-static /usr/bin
 
+RUN uname -a
+
 RUN apt-get update
 RUN apt-get install -y libgdal-dev python3-pip libspatialindex-dev unar bc
 
