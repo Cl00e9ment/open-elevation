@@ -1,11 +1,5 @@
-FROM alpine AS builder
-RUN apk update
-RUN apk add curl
-WORKDIR /qemu
-RUN curl -L https://github.com/balena-io/qemu/releases/download/v3.0.0%2Bresin/qemu-3.0.0+resin-arm.tar.gz | tar zxvf - -C . && mv qemu-3.0.0+resin-arm/qemu-arm-static .
-
 FROM area51/gdal:arm64v8-2.2.3
-COPY --from=builder /qemu/qemu-arm-static /usr/bin
+COPY qemu-arm-static /usr/bin
 
 RUN uname -a
 
