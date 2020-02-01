@@ -34,4 +34,4 @@ jobs:
         --platform=linux/amd64,linux/arm64 \
         --output "type=image,push=true" \
         --file ./docker/Dockerfile . \
-        --tag $(echo "${DOCKER_USERNAME}" | tr '[:upper:]' '[:lower:]')/ttrss:latest
+        --tag cl00e9ment/open-elevation:latest
