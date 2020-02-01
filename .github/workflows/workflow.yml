@@ -5,7 +5,7 @@ name: '[builder] CI for releases'
 on:
   push:
     branches:
-      - master
+      - auto-build
 
 jobs:
   release:
