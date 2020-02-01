@@ -1,4 +1,4 @@
-# Open-Elevation
+# Open-Elevation (forked)
 
 [https://open-elevation.com](https://open-elevation.com)
 
@@ -14,3 +14,8 @@ If you enjoy our service, please consider [donating to us](https://open-elevatio
 
 You can learn more about the project, including its **free public API** in [the website](https://open-elevation.com)
 
+## What's different from the [official image](https://hub.docker.com/r/openelevation/open-elevation)?
+
+- The dataset URLs has been updated.
+- You can restrict the access to the API using keys.
+- An arm64 image is available, so you can run the server on a Raspberry Pi for example.
