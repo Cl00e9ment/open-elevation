@@ -1,7 +1,4 @@
-FROM area51/gdal:arm64v8-2.2.3
-COPY qemu-arm-static /usr/bin
-
-RUN uname -a
+FROM area51/gdal:2.2.3
 
 RUN apt-get update
 RUN apt-get install -y libgdal-dev python3-pip libspatialindex-dev unar bc
