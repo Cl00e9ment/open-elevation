@@ -1,11 +1,11 @@
-# https://henry.wang/2019/12/05/arm-dockerhub.html
+# inspired from https://henry.wang/2019/12/05/arm-dockerhub.html
 
 name: '[builder] CI for releases'
 
 on:
   push:
     branches:
-      - auto-build
+      - master
 
 jobs:
   release:

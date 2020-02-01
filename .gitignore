@@ -1,7 +1,5 @@
 __pycache__/
 *.pyc
-/data/*
-!/data/config.json
-!/data/keys.txt
+/data/
 .idea/
 .DS_Store
