@@ -10,9 +10,8 @@ ADD ./requirements.txt .
 RUN pip3 install -r requirements.txt
 RUN rm requirements.txt
 
-RUN mkdir /code
-ADD src/* /code/
-WORKDIR /code
+WORKDIR /code/
+ADD src/* ./
 
 CMD python3.5 server.py
 
